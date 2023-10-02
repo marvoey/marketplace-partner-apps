@@ -1,9 +1,39 @@
-import { setup, renderSkuPicker } from '@contentful/ecommerce-app-base';
+import { renderSkuPicker } from '@contentful/ecommerce-app-base';
 import { fetchProductVariantPreviews, fetchProductPreviews, fetchCollectionPreviews, makeSkuResolver } from './skuResolvers';
 import { SKU_TYPES } from './constants';
 
-import logo from './logo.svg';
+import logo from './logo.png';
 import { AdditionalDataRenderer } from './additionalDataRenderer';
+
+import { init, locations } from '@contentful/app-sdk';
+import { GlobalStyles } from '@contentful/f36-components';
+import * as React from 'react';
+import { render } from 'react-dom';
+import { Field } from './Editor/Field';
+import { IntegrationProvider } from '@contentful/ecommerce-app-base/lib/Editor/IntegrationContext';
+import { SDKProvider } from '@contentful/react-apps-toolkit';
+
+function setup(integration) {
+  init((sdk) => {
+    const root = document.getElementById('root');
+
+    if (sdk.location.is(locations.LOCATION_DIALOG)) {
+      integration.renderDialog(sdk);
+    }
+
+    if (sdk.location.is(locations.LOCATION_ENTRY_FIELD)) {
+      render(
+        <IntegrationProvider integration={ integration }>
+          <SDKProvider>
+            <GlobalStyles />
+            <Field />
+          </SDKProvider>
+        </IntegrationProvider>,
+        root
+      );
+    }
+  });
+}
 
 const DIALOG_ID = 'dialog-root';
 
@@ -28,7 +58,7 @@ function makeSaveBtnText(skuType) {
         case 1:
           return 'Save 1 product';
         default:
-          return `Save ${selectedSKUs.length} products`;
+          return `Save ${ selectedSKUs.length } products`;
       }
     };
   }
@@ -41,7 +71,7 @@ function makeSaveBtnText(skuType) {
         case 1:
           return 'Save 1 collection';
         default:
-          return `Save ${selectedSKUs.length} collections`;
+          return `Save ${ selectedSKUs.length } collections`;
       }
     };
   }
@@ -53,7 +83,7 @@ function makeSaveBtnText(skuType) {
       case 1:
         return 'Save 1 product variant';
       default:
-        return `Save ${selectedSKUs.length} product variants`;
+        return `Save ${ selectedSKUs.length } product variants`;
     }
   };
 }
